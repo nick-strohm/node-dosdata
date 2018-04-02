@@ -205,34 +205,34 @@ class DosHeader extends PointerObject {
 }
 
 enum Machine {
-    Intel386 = 0x14c,
-    x64 = 0x8664,
-    MipsR3000 = 0x162,
-    MipsR10000 = 0x168,
-    MipsLittleEndianWciV2 = 0x169,
-    OldAlphaAxp = 0x183,
-    AlphaAxp = 0x184,
-    HitachiSh3 = 0x1a2,
-    HitachiSh3Dsp = 0x1a3,
-    HitachiSh4 = 0x1a6,
-    HitachiSh5 = 0x1a8,
-    ArmLittleEndian = 0x1c0,
-    Thumb = 0x1c2,
-    ArmV7 = 0x1c4,
-    MatsushitaAm33 = 0x1d3,
-    PowerPcLittleEndian = 0x1f0,
+    Intel386                       = 0x14c,
+    x64                            = 0x8664,
+    MipsR3000                      = 0x162,
+    MipsR10000                     = 0x168,
+    MipsLittleEndianWciV2          = 0x169,
+    OldAlphaAxp                    = 0x183,
+    AlphaAxp                       = 0x184,
+    HitachiSh3                     = 0x1a2,
+    HitachiSh3Dsp                  = 0x1a3,
+    HitachiSh4                     = 0x1a6,
+    HitachiSh5                     = 0x1a8,
+    ArmLittleEndian                = 0x1c0,
+    Thumb                          = 0x1c2,
+    ArmV7                          = 0x1c4,
+    MatsushitaAm33                 = 0x1d3,
+    PowerPcLittleEndian            = 0x1f0,
     PowerPcWihFloatingPointSupport = 0x1f1,
-    IntalIa64 = 0x200,
-    Mips16 = 0x266,
-    Motorola68000Series = 0x268,
-    AlphaAxp64 = 0x284,
-    MipsWithFpu = 0x366,
-    Mips16WithFpu = 0x466,
-    EfiByteCode = 0xebc,
-    Amd64 = 0x8664,
-    MitsubishiM32RLittleEndian = 0x9041,
-    Arm64LittleEndian = 0xaa64,
-    ClrPureMsil = 0xc0ee
+    IntalIa64                      = 0x200,
+    Mips16                         = 0x266,
+    Motorola68000Series            = 0x268,
+    AlphaAxp64                     = 0x284,
+    MipsWithFpu                    = 0x366,
+    Mips16WithFpu                  = 0x466,
+    EfiByteCode                    = 0xebc,
+    Amd64                          = 0x8664,
+    MitsubishiM32RLittleEndian     = 0x9041,
+    Arm64LittleEndian              = 0xaa64,
+    ClrPureMsil                    = 0xc0ee
 }
 
 enum CoffCharacteristic {
@@ -280,9 +280,9 @@ class CoffHeader extends PointerObject {
 }
 
 enum PeFormat {
-    Win32  = 0x10b,
-    Win64  = 0x20b,
-    Rom    = 0x107
+    Win32 = 0x10b,
+    Win64 = 0x20b,
+    Rom   = 0x107
 }
 
 enum Subsystem {
@@ -303,20 +303,20 @@ enum Subsystem {
 }
 
 enum DllCharacteristics {
-    Reserved1 = 1 << 0,
-    Reserved2 = 1 << 1,
-    Reserved3 = 1 << 2,
-    Reserved4 = 1 << 3,
-    HighEntropyVa = 1 << 5,
-    DynamicBase = 1 << 6,
-    ForceIntegrity = 1 << 7,
-    NxCompat = 1 << 8,
-    NoIsolation = 1 << 9,
-    NoSeh = 1 << 10,
-    NoBind = 1 << 11,
-    Appcontainer = 1 << 12,
-    WdmDriver = 1 << 13,
-    GuardCf = 1 << 14,
+    Reserved1           = 1 << 0,
+    Reserved2           = 1 << 1,
+    Reserved3           = 1 << 2,
+    Reserved4           = 1 << 3,
+    HighEntropyVa       = 1 << 5,
+    DynamicBase         = 1 << 6,
+    ForceIntegrity      = 1 << 7,
+    NxCompat            = 1 << 8,
+    NoIsolation         = 1 << 9,
+    NoSeh               = 1 << 10,
+    NoBind              = 1 << 11,
+    Appcontainer        = 1 << 12,
+    WdmDriver           = 1 << 13,
+    GuardCf             = 1 << 14,
     TerminalServerAware = 1 << 15
 }
 
