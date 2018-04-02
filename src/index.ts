@@ -32,6 +32,11 @@ class DosData {
         this.mapSections();
         this.readResourceSection();
 
+        if (!this.options.debug) {
+            return;
+        }
+
+        delete this.buffer;
         console.dir(this, {depth: 100});
     }
 
