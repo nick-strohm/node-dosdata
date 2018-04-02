@@ -12,7 +12,7 @@ class DosData {
     public dosHeader: DosHeader;
     public coffHeader: CoffHeader;
     public optionalHeader: OptionalHeader;
-    public sectionContainer: SectionContainer;
+    private sectionContainer: SectionContainer;
 
     constructor(buffer: Buffer | string, options: DosDataOptions) {
         if (typeof(buffer) == 'string') {
