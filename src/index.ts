@@ -490,58 +490,42 @@ class SectionContainer extends PointerObject {
 }
 
 class ResourceDataEntry extends PointerObject {
-    public data: number;
-    public size: number;
-    public codeSize: number;
+    public dataOffset: number;
+    public entrySize: number;
+    public codePage: number;
     public reserved: number;
-    
+
     parse(): void {
-        this.data = this.readLong();
-        this.size = this.readLong();
-        this.codeSize = this.readLong();
+        let rsrcOffset: number = this.options['rsrcRva'];
+
+        this.dataOffset = (this.readLong() & 0x00FF);
+        this.entrySize = this.readLong();
+        this.codePage = this.readLong();
         this.reserved = this.readLong();
     }
 }
 
 class ResourceDirectoryEntry extends PointerObject {
-    public key: number;
-    public dat: number;
+    public nameId: number;
+    public dataOffset: number;
+    public data: object;
 
     public isNamedEntry: boolean;
-    public isLeafNode: boolean;
-
-    public name: string;
-    public id: number;
-
-    public data: ResourceDataEntry;
-    public directory: ResourceDirectory;
+    public isDirectoryEntry: boolean;
 
     parse(): void {
-        let rsrcOffset: number = this.options["rsrcRva"];
+        let rsrcOffset: number = this.options['rsrcRva'];
 
-        this.key = this.dosData.buffer.readInt32BE(this.offset);
-        this.dat = this.dosData.buffer.readInt32BE(this.offset + 4);
+        this.nameId = this.readLong();
+        this.dataOffset = this.readLong();
 
-        this.size += 8;
+        this.isNamedEntry = (this.nameId & 0x80000000) != 0;
+        this.isDirectoryEntry = (this.dataOffset & 0x80000000) != 0;
 
-        this.isNamedEntry = (this.key & 0b10000000) == 0b10000000;
-        this.isLeafNode   = (this.dat & 0b10000000) != 0b10000000;
-
-        if (this.isNamedEntry) {
-            this.key &= 0b01111111;
+        if (this.isDirectoryEntry) {
+            this.data = new ResourceDirectory(rsrcOffset + (this.dataOffset & 0x7FFFFFFF), this.dosData, this.options);
         } else {
-            this.key &= 0b00001111;
-            this.id = this.key;
-        }
-
-        if (this.isLeafNode) {
-            this.dat &= 0b00001111;
-            return;
-            this.data = new ResourceDataEntry(rsrcOffset + this.dat, this.dosData, this.options);
-        } else {
-            this.dat &= 0b01111111;
-            return;
-            this.directory = new ResourceDirectory(rsrcOffset + this.dat, this.dosData, this.options);
+            this.data = new ResourceDataEntry(rsrcOffset + (this.dataOffset & 0x0000FFFF), this.dosData, this.options);
         }
     }
 }
