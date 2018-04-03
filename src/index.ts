@@ -142,6 +142,20 @@ abstract class PointerObject {
         this.size += length;
         return value;
     }
+
+    align(n: number = 4): void {
+        while(!Util.isPowerOfTwo(n)) {
+            n++;
+        }
+
+        this.readShort();
+
+        let bounds = 0;
+        while((bounds = (this.offset + this.size) % 4) != 0) {
+            console.log(`[Bounding] Offset: ${this.offset} Size: ${this.size} (${this.offset + this.size}) -> ${bounds} -> ${bounds != 0}}`);
+            this.readShort();
+        }
+    }
 }
 
 class DosHeader extends PointerObject {

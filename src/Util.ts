@@ -130,6 +130,9 @@ class Util {
     public static readString(buffer: Buffer, offset: number, length: number, encoding: string = 'utf8') {
         return buffer.toString(encoding, offset, offset + length);
     }
+
+    public static isPowerOfTwo(x: number): boolean {
+        return (x != 0) && ((x & (x - 1)) == 0);
     }
 }
 
