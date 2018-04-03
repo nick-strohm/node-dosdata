@@ -127,8 +127,9 @@ class Util {
         return new int64(buffer, offset);
     }
 
-    public static readString(buffer: Buffer, offset: number, length: number) {
-        return buffer.toString('utf8', offset, offset + length);
+    public static readString(buffer: Buffer, offset: number, length: number, encoding: string = 'utf8') {
+        return buffer.toString(encoding, offset, offset + length);
+    }
     }
 }
 

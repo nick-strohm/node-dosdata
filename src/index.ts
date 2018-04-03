@@ -115,15 +115,15 @@ abstract class PointerObject {
         return value;
     }
 
-    readShort(): number {
-        let value = Util.readShort(this.dosData.buffer, this.offset + this.size);
+    readShort(lowEndian: boolean = true): number {
+        let value = Util.readShort(this.dosData.buffer, this.offset + this.size, lowEndian);
         this.devout(this.offset + this.size, value);
         this.size += 2;
         return value;
     }
 
-    readLong(): number {
-        let value = Util.readLong(this.dosData.buffer, this.offset + this.size);
+    readLong(lowEndian: boolean = true): number {
+        let value = Util.readLong(this.dosData.buffer, this.offset + this.size, lowEndian);
         this.devout(this.offset + this.size, value);
         this.size += 4;
         return value;
@@ -136,8 +136,8 @@ abstract class PointerObject {
         return value;
     }
 
-    readString(length: number): string {
-        let value = Util.readString(this.dosData.buffer, this.offset + this.size, length);
+    readString(length: number, encoding: string = 'utf8'): string {
+        let value = Util.readString(this.dosData.buffer, this.offset + this.size, length, encoding);
         this.devout(this.offset + this.size, value);
         this.size += length;
         return value;
