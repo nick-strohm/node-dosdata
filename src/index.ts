@@ -503,11 +503,246 @@ class SectionContainer extends PointerObject {
     }
 }
 
+class VsFixedFileInfo extends PointerObject {
+    public signature: number;
+    public structureVersion: number;
+    public fileVersionMs: number;
+    public fileVersionLs: number;
+    public productVersionMs: number;
+    public productVersionLs: number;
+    public fileFlagsMask: number;
+    public fileFlags: number;
+    public fileOs: number;
+    public fileType: number;
+    public fileSubtype: number;
+    public fileDateMs: number;
+    public fileDateLs: number;
+
+    parse(): void {
+        this.signature = this.readLong();
+        this.structureVersion = this.readLong();
+        this.fileVersionMs = this.readLong();
+        this.fileVersionLs = this.readLong();
+        this.productVersionMs = this.readLong();
+        this.productVersionLs = this.readLong();
+        this.fileFlagsMask = this.readLong();
+        this.fileFlags = this.readLong();
+        this.fileOs = this.readLong();
+        this.fileType = this.readLong();
+        this.fileSubtype = this.readLong();
+        this.fileDateMs = this.readLong();
+        this.fileDateLs = this.readLong();
+    }
+}
+
+class MsString extends PointerObject {
+    public length: number;
+    public valueLength: number;
+    public type: number;
+    public key: string;
+    public value: string;
+
+    parse(): void {
+        this.length = this.readShort();
+        this.valueLength = this.readShort();
+        this.type = this.readShort();
+        return;
+        this.key = this.readString('Comments'.length * 2, 'utf16le');
+        if (this.key != 'Comments') {
+            this.size -= 'Comments'.length * 2;
+            this.key = this.readString('CompanyName'.length * 2, 'utf16le');
+
+            if (this.key != 'CompanyName') {
+                this.size -= 'CompanyName'.length * 2;
+                this.key = this.readString('FileDescription'.length * 2, 'utf16le');
+        
+                if (this.key != 'FileDescription') {
+                    this.size -= 'FileDescription'.length * 2;
+                    this.key = this.readString('FileVersion'.length * 2, 'utf16le');
+        
+                    if (this.key != 'FileVersion') {
+                        this.size -= 'FileVersion'.length * 2;
+                        this.key = this.readString('InternalName'.length * 2, 'utf16le');
+        
+                        if (this.key != 'InternalName') {
+                            this.size -= 'InternalName'.length * 2;
+                            this.key = this.readString('LegalCopyright'.length * 2, 'utf16le');
+        
+                            if (this.key != 'LegalCopyright') {
+                                this.size -= 'LegalCopyright'.length * 2;
+                                this.key = this.readString('LegalTrademarks'.length * 2, 'utf16le');
+        
+                                if (this.key != 'LegalTrademarks') {
+                                    this.size -= 'LegalTrademarks'.length * 2;
+                                    this.key = this.readString('OriginalFilename'.length * 2, 'utf16le');
+        
+                                    if (this.key != 'OriginalFilename') {
+                                        this.size -= 'OriginalFilename'.length * 2;
+                                        this.key = this.readString('PrivateBuild'.length * 2, 'utf16le');
+        
+                                        if (this.key != 'PrivateBuild') {
+                                            this.size -= 'PrivateBuild'.length * 2;
+                                            this.key = this.readString('ProductName'.length * 2, 'utf16le');
+        
+                                            if (this.key != 'ProductName') {
+                                                this.size -= 'ProductName'.length * 2;
+                                                this.key = this.readString('ProductVersion'.length * 2, 'utf16le');
+        
+                                                if (this.key != 'ProductVersion') {
+                                                    this.size -= 'ProductVersion'.length * 2;
+                                                    this.key = this.readString('SpecialBuild'.length * 2, 'utf16le');
+
+                                                    if (this.key != 'SpecialBuild') {
+                                                        throw new TypeError('A string with this key is not supported.');
+                                                        return;
+
+                                                        // Sorry for this ugly shit lol
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        this.align();
+
+        this.value = this.readString(this.valueLength, 'utf16le');
+    }
+}
+
+class StringTable extends PointerObject {
+    public length: number;
+    public valueLength: number;
+    public type: number;
+    public key: string;
+    public children: MsString[];
+
+    parse(): void {
+        this.length = this.readShort();
+        this.valueLength = this.readShort();
+        this.type = this.readShort();
+        this.key = this.readString(16, 'utf16le');
+
+        this.align();
+
+        this.children = [];
+        while(this.size < this.length) {
+            const element = new MsString(this.offset + this.size, this.dosData, this.options);
+            this.size += element.size;
+            this.children.push(element);
+        }
+    }
+}
+
+class Var extends PointerObject {
+    public length: number;
+    public valueLength: number;
+    public type: number;
+    public key: string;
+    public children: number[];
+
+    parse(): void {
+        this.length = this.readShort();
+        this.valueLength = this.readShort();
+        this.type = this.readShort();
+        this.key = this.readString('Translation'.length * 2, 'utf16le');
+
+        this.align();
+
+        this.children = [];
+        while (this.size < this.length) {
+            const element = this.readLong();
+            this.children.push(element);
+        }
+    }
+}
+
+class FileInfo extends PointerObject {
+    public length: number;
+    public valueLength: number;
+    public type: number;
+    public key: string;
+    public children: Object[];
+
+    public isVarFileInfo: boolean = false;
+
+    parse(): void {
+        this.length = this.readShort();
+        this.valueLength = this.readShort();
+        this.type = this.readShort();
+        this.key = this.readString('VarFileInfo'.length * 2, 'utf16le');
+        if (this.key == 'VarFileInfo') {
+            this.isVarFileInfo = true;
+        } else {
+            this.size -= 22;
+            this.key = this.readString('StringFileInfo'.length * 2, 'utf16le');
+
+            if (this.key != 'StringFileInfo') {
+                throw new TypeError('Expected VarFileInfo or StringFileInfo in VsVersionInfo.');
+            }
+        }
+
+        this.align();
+
+        this.children = [];
+        while(this.size < this.length) {
+            if (this.isVarFileInfo) {
+                const element = new Var(this.offset + this.size, this.dosData, this.options);
+                this.size += element.size;
+                this.children.push(element);
+                continue;
+            }
+
+            const element = new StringTable(this.offset + this.size, this.dosData, this.options);
+            this.size += element.size;
+            this.children.push(element);
+        }
+    }
+}
+
+class VsVersionInfo extends PointerObject {
+    public length: number;
+    public valueLength: number;
+    public type: number;
+    public key: string;
+    public value: VsFixedFileInfo;
+    public children: FileInfo[];
+
+    parse(): void {
+        this.length = this.readShort();
+        this.valueLength = this.readShort();
+        this.type = this.readShort();
+        this.key = this.readString(30, 'utf16le');
+
+        this.align();
+
+        if (this.valueLength != 0) {
+            this.value = new VsFixedFileInfo(this.offset + this.size, this.dosData, this.options);
+            this.size += this.value.size;
+        }
+
+        this.children = [];
+        while(this.size < this.length) {
+            let child = new FileInfo(this.offset + this.size, this.dosData, this.options);
+            this.size += child.size;
+            this.children.push(child);
+        }
+    }
+}
+
 class ResourceDataEntry extends PointerObject {
     public dataOffset: number;
     public entrySize: number;
     public codePage: number;
     public reserved: number;
+
+    public vsVersionInfo: VsVersionInfo;
 
     parse(): void {
         let rsrcOffset: number = this.options['rsrcRva'];
