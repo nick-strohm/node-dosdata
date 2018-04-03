@@ -751,6 +751,8 @@ class ResourceDataEntry extends PointerObject {
         this.entrySize = this.readLong();
         this.codePage = this.readLong();
         this.reserved = this.readLong();
+
+        this.vsVersionInfo = new VsVersionInfo(rsrcOffset + this.dataOffset, this.dosData, this.options);
     }
 }
 
